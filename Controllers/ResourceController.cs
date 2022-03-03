@@ -26,12 +26,16 @@ namespace Aim.Core.Services.Controllers
         [HttpGet("[action]")]
         public IActionResult Regions()
         {
-            return Ok(_db.Regions());
+            List<Node> nodes = _db.Regions();
+            ResponseMessage<List<Node>> returnVal = ResponseMessage<List<Node>>.Success(nodes);
+            return Ok(returnVal);
         }
         [HttpGet("[action]/{regionId}")]
         public IActionResult SubRegions(int regionId)
         {
-            return Ok(_db.SubRegions(regionId));
+            List<Node> nodes = _db.SubRegions(regionId);
+            ResponseMessage<List<Node>> returnVal = ResponseMessage<List<Node>>.Success(nodes);
+            return Ok(returnVal);
         }
         [HttpGet("[action]")]
         public IActionResult GetMeterInsert()
