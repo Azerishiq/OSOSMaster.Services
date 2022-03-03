@@ -7,7 +7,8 @@ namespace Aim.Core.Services.Models
 {
     public class Meter
     {
-        public int? ID { get; set; }
+        public int ID { get; set; }
+        #nullable enable
         public int? ModemID { get; set; }
         public string? SerialNumber { get; set; }
         public short? MeterModelID { get; set; }

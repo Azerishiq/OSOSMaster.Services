@@ -1,5 +1,6 @@
 ﻿using Aim.Core.Services.Database;
 using Aim.Core.Services.Dtos;
+using Aim.Core.Services.Extensions;
 using Aim.Core.Services.Models;
 using Aim.Core.Services.Resources;
 using Microsoft.AspNetCore.Http;
@@ -23,10 +24,21 @@ namespace Aim.Core.Services.Controllers
             _oracle = oracle;
         }
         [HttpGet("[action]")]
+        public IActionResult Regions()
+        {
+            return Ok(_db.Regions());
+        }
+        [HttpGet("[action]/{regionId}")]
+        public IActionResult SubRegions(int regionId)
+        {
+            return Ok(_db.SubRegions(regionId));
+        }
+        [HttpGet("[action]")]
         public IActionResult GetMeterInsert()
         {
             var responseMessage = new ResponseMessage<object>();
-            object meters = _db.Meters.ToList().Select(a => new { MeterId = a.ID, Meterno = a.SerialNumber });
+            IEnumerable<int> nodemetersId = _db.NodeMeters.ToList().Select(a=>a.MeterId);
+            object meters = _db.Meters.Where(a=>!nodemetersId.Contains(a.ID)).ToList().Select(a => new { MeterId = a.ID, Meterno = a.SerialNumber });
             object categories = _db.MetersCategories.ToList();
             object powers = _db.MeterPowers.ToList();
             responseMessage.Data = new { meters, categories, powers };

@@ -37,6 +37,7 @@ namespace Aim.Core.Services
             services.AddDbContext<AimContext>(a =>
             a.UseSqlServer(Configuration.GetConnectionString("IndexContext")));
             services.AddDbContext<OracleContext>(T => T.UseOracle(Configuration.GetConnectionString("OracleContext"), options => options.UseOracleSQLCompatibility("11")));
+            services.AddRouting(options => options.LowercaseUrls = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
