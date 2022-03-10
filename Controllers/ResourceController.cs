@@ -41,8 +41,7 @@ namespace Aim.Core.Services.Controllers
         public IActionResult GetMeterInsert()
         {
             var responseMessage = new ResponseMessage<object>();
-            IEnumerable<int> nodemetersId = _db.NodeMeters.ToList().Select(a=>a.MeterId);
-            object meters = _db.Meters.Where(a=>!nodemetersId.Contains(a.ID)).ToList().Select(a => new { MeterId = a.ID, Meterno = a.SerialNumber });
+            object meters = _db.Meters.ToList().Select(a => new { MeterId = a.ID, Meterno = a.SerialNumber });
             object categories = _db.MetersCategories.ToList();
             object powers = _db.MeterPowers.ToList();
             responseMessage.Data = new { meters, categories, powers };
