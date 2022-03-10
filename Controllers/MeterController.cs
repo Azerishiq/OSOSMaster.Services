@@ -73,6 +73,7 @@ namespace Aim.Core.Services.Controllers
         [HttpGet("[action]/{meterId}")]
         public IActionResult Details(int meterId)
         {
+            ResponseMessage<object> responseMessage = new();
             DateTime date = Convert.ToDateTime(DateTime.Now.ToShortDateString());
             var meter = _db.Meters.Where(s => s.ID == meterId).FirstOrDefault();
             SubMeter transcoef = _oracle.SUBMETER.Where(a => a.METERNO.StartsWith(meter.SerialNumber)).FirstOrDefault();
@@ -89,7 +90,8 @@ namespace Aim.Core.Services.Controllers
                                  c.RI,
                                  b.ExpRI
                              }).ToList();
-            return Ok(new { resultlog, transcoef, meter });
+            responseMessage.Data = new { resultlog, transcoef, meter };
+            return Ok(responseMessage);
         }
     }
 }
