@@ -16,9 +16,11 @@ namespace Aim.Core.Services.Controllers
     public class MeterController : ControllerBase
     {
         private readonly AimContext _db;
-        public MeterController(AimContext db)
+        private readonly OracleContext _oracle;
+        public MeterController(AimContext db, OracleContext oracle)
         {
             _db = db;
+            _oracle = oracle;
         }
         [HttpGet("[action]")]
         public IActionResult Get(int nodeId, string subid, int page = 0)
@@ -41,7 +43,7 @@ namespace Aim.Core.Services.Controllers
             return Ok(responseMessage);
         }
         [HttpGet("[action]")]
-        public IActionResult Metrics(int nodeId, string subid, int page = 0)
+        public IActionResult Metrics(int nodeId, string subid, string meterno, int page = 0)
         {
             ResponseMessage<object> responseMessage = new();
             List<Meter> data = _db.Meters.ToList();
@@ -60,13 +62,34 @@ namespace Aim.Core.Services.Controllers
                                    node.Name,
                                    Category = category.Name,
                                    ParentNode = parentNode.Name,
-                                   metrics = _db.ReadingReadout.Where(a=>a.MeterID == nodemeter.MeterId).OrderByDescending(a=>a.CreateDate).FirstOrDefault()
+                                   metrics = _db.ReadingReadout.Where(a => a.MeterID == nodemeter.MeterId).OrderByDescending(a => a.CreateDate).FirstOrDefault()
                                }).ToList();
             float pagecount = returnValue.Count;
             int count = (int)Math.Ceiling(pagecount / 10);
             returnValue = returnValue.Skip(page * 10).TakeSafe(10).ToList();
             responseMessage.Data = new { meter = returnValue, page = count };
             return Ok(responseMessage);
+        }
+        [HttpGet("[action]/{meterId}")]
+        public IActionResult Details(int meterId)
+        {
+            DateTime date = Convert.ToDateTime(DateTime.Now.ToShortDateString());
+            var meter = _db.Meters.Where(s => s.ID == meterId).FirstOrDefault();
+            SubMeter transcoef = _oracle.SUBMETER.Where(a => a.METERNO.StartsWith(meter.SerialNumber)).FirstOrDefault();
+            var resultlog = (from a in _db.ReadingReadout
+                             join b in _db.ReadingReadoutExport on a.PartitionId equals b.PartitionId
+                             join c in _db.ReadingReadoutReactive on a.PartitionId equals c.PartitionId
+                             where a.MeterID == meterId && a.MeterDate >= date && date <= a.MeterDate
+                             orderby a.MeterDate descending
+                             select new
+                             {
+                                 a.MeterDate,
+                                 a.IndexT,
+                                 b.ExpIndexT,
+                                 c.RI,
+                                 b.ExpRI
+                             }).ToList();
+            return Ok(new { resultlog, transcoef, meter });
         }
     }
 }

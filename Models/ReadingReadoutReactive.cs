@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Aim.Core.Services.Models
 {
-    public class SubMeter
+    public class ReadingReadoutReactive
     {
         [Key]
-        #nullable enable
-        public string? METERNO { get; set; }
-        public string? SUBID { get; set; }
-        public int? TRANSCOEF { get; set; }
+        public int MeterId { get; set; }
+        public long PartitionId { get; set; }
+        public decimal? RI { get; set; }
+        public decimal? RC { get; set; }
     }
 }

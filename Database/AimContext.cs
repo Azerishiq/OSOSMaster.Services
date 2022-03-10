@@ -19,9 +19,9 @@ namespace Aim.Core.Services.Database
         public DbSet<MeterPower> MeterPowers { get; set; }
         public DbSet<MetersCategory> MetersCategories { get; set; }
         public DbSet<NodeMeter> NodeMeters { get; set; }
-        //public DbSet<ConsumptionLPHourly> ConsumptionLPHourly { get; set; }
-        //public DbSet<MeterProperty> MeterProperties { get; set; }
         public DbSet<ReadingReadout> ReadingReadout { get; set; }
+        public DbSet<ReadingReadoutExport> ReadingReadoutExport { get; set; }
+        public DbSet<ReadingReadoutReactive> ReadingReadoutReactive { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -48,6 +48,18 @@ namespace Aim.Core.Services.Database
                {
                    builder.HasNoKey();
                    builder.ToTable("ReadingReadout");
+               });
+            modelBuilder
+               .Entity<ReadingReadoutExport>(builder =>
+               {
+                   builder.HasNoKey();
+                   builder.ToTable("ReadingReadoutExport");
+               });
+            modelBuilder
+               .Entity<ReadingReadoutReactive>(builder =>
+               {
+                   builder.HasNoKey();
+                   builder.ToTable("ReadingReadoutReactive");
                });
         }
     }
