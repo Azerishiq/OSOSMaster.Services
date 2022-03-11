@@ -81,7 +81,7 @@ namespace Aim.Core.Services.Controllers
                              join b in _db.ReadingReadoutExport on a.PartitionId equals b.PartitionId
                              join c in _db.ReadingReadoutReactive on a.PartitionId equals c.PartitionId
                              where a.MeterID == meterId && a.MeterDate >= date && date <= a.MeterDate
-                             orderby a.MeterDate descending
+                             orderby a.MeterDate
                              select new
                              {
                                  a.MeterDate,
@@ -89,7 +89,11 @@ namespace Aim.Core.Services.Controllers
                                  b.ExpIndexT,
                                  c.RI,
                                  b.ExpRI
-                             }).ToList();
+                             })
+                             .AsEnumerable()
+                             .GroupBy(a => a.MeterDate.Hour)
+                             .Select(a => a.FirstOrDefault())
+                             .ToList();
             responseMessage.Data = new { resultlog, transcoef, meter };
             return Ok(responseMessage);
         }
